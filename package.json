@@ -1,0 +1,40 @@
+{
+  "name": "android_server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nguyenkhanhduy271004/androids_server.git"
+  },
+  "keywords": [
+    "androidserver"
+  ],
+  "author": "nguyenduy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nguyenkhanhduy271004/androids_server/issues"
+  },
+  "homepage": "https://github.com/nguyenkhanhduy271004/androids_server#readme",
+  "dependencies": {
+    "crypto": "^1.0.1",
+    "date-fns": "^3.6.0",
+    "email-validator": "^2.0.4",
+    "express": "^4.19.2",
+    "mongoose": "^8.3.2",
+    "mongoose-delete": "^1.0.2",
+    "mongoose-sequence": "^6.0.1",
+    "mongoose-slug-updater": "^3.3.0",
+    "nodemailer": "^6.9.13",
+    "routes": "^2.1.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "morgan": "^1.10.0",
+    "nodemon": "^3.1.0"
+  }
+}
