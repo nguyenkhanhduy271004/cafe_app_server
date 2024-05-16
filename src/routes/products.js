@@ -17,5 +17,9 @@ router.get('/products-search', productController.getProductsSearch)
 
 router.get('/products-in-category', productController.getProductsCategory)
 
+router.get('/set-best-product', productController.updateProductPopularStatus)
+
+router.post('/add-product', productController.addProduct)
+
 
 module.exports = router;

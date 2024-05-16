@@ -43,7 +43,7 @@ class CartController {
                 const orderId = await generateUniqueOrderId();
                 await Cart.updateMany(
                     { user: username, isOrdered: false },
-                    { $set: { isOrdered: true, orderId: orderId } }
+                    { $set: { orderId: orderId } }
                 );
                 const newOrder = new Order({
                     orderId: orderId,

@@ -11,9 +11,13 @@ router.get('/get-infor-user-for-admin', userController.getInforUserForAdmin)
 
 router.get('/get-infor-user', userController.getInforUser)
 
+router.get('/get-working-status-user', userController.getWorkingStatusUser)
+
 router.patch('/set-online-for-user-for-admin', userController.setOnlineForUserForAdmin)
 
 router.patch('/set-online-for-user', userController.setOnlineForUser)
+
+router.patch('/set-offline-for-user', userController.setOfflineForUser)
 
 router.patch('/update-role-for-user-for-admin', userController.updateRoleForUserForAdmid)
 
