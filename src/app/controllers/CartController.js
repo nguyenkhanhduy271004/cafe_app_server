@@ -127,7 +127,7 @@ class CartController {
     }
 
     getProductsInProcessingForStaff(req, res) {
-        Cart.find({ isCompleted: false })
+        Cart.find({ isConfirmed: true, isCompleted: false })
             .then(products => res.json(products))
             .catch(err => {
                 console.error(err);

@@ -112,9 +112,9 @@ class ProductController {
     }
 
     getInforProduct(req, res) {
-        const _id = req.query._id;
+        const title = req.query.title;
 
-        Product.findOne({ _id: _id })
+        Product.findOne({ title: title })
             .then(product => {
                 if (product) {
                     res.json(product);
@@ -174,7 +174,7 @@ class ProductController {
     }
 
     updateInforProduct(req, res) {
-        const _id = req.query._id;
+        const title = req.query.title;
         const { imageUrl, name, price, category } = req.body;
 
         if (!imageUrl || !name || !price || !category) {
@@ -183,7 +183,7 @@ class ProductController {
 
         const update = { image: imageUrl, title: name, price, category };
 
-        Product.findOneAndUpdate({ _id: _id }, update, { new: true })
+        Product.findOneAndUpdate({ title: title }, update, { new: true })
             .then(updatedProduct => {
                 if (updatedProduct) {
                     res.json({ message: 'Update successfully' });
@@ -192,6 +192,23 @@ class ProductController {
                 }
             })
             .catch(error => {
+                res.status(500).json({ error: 'Internal Server Error' });
+            });
+    }
+
+    deleteProduct(req, res) {
+        const title = req.query.title;
+
+        Product.findOneAndDelete({ title: title })
+            .then(result => {
+                if (result) {
+                    res.status(200).json({ message: 'Product deleted successfully' });
+                } else {
+                    res.status(404).json({ error: 'Product not found' });
+                }
+            })
+            .catch(err => {
+                console.error(err);
                 res.status(500).json({ error: 'Internal Server Error' });
             });
     }

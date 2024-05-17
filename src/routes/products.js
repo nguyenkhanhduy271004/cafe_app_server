@@ -25,5 +25,7 @@ router.post('/add-product', productController.addProduct)
 
 router.put('/update-infor-product', productController.updateInforProduct)
 
+router.delete('/delete-product', productController.deleteProduct)
+
 
 module.exports = router;

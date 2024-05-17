@@ -8,7 +8,6 @@ const ProductSchema = new Schema(
         title: { type: String },
         price: { type: Number },
         star: { type: Number, default: 5 },
-        time: { type: String },
         category: { type: String },
         popular: { type: String }
     },
