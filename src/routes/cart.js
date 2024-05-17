@@ -7,7 +7,9 @@ router.get('/products-in-cart', cartController.getProductsInCart)
 
 router.get('/set-orderId-product', cartController.setOrderIdProduct)
 
-router.get('/set-ordered', cartController.setOrdered)
+router.put('/set-confirmed', cartController.setConfirmed)
+
+router.put('/set-ordered', cartController.setOrdered)
 
 router.get('/receive-order', cartController.receiveOrder)
 

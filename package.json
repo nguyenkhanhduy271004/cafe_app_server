@@ -25,16 +25,19 @@
     "date-fns": "^3.6.0",
     "email-validator": "^2.0.4",
     "express": "^4.19.2",
+    "fetch": "^1.1.0",
     "mongoose": "^8.3.2",
     "mongoose-delete": "^1.0.2",
     "mongoose-sequence": "^6.0.1",
     "mongoose-slug-updater": "^3.3.0",
+    "node": "^22.2.0",
     "nodemailer": "^6.9.13",
     "routes": "^2.1.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
     "morgan": "^1.10.0",
+    "node-fetch": "^3.3.2",
     "nodemon": "^3.1.0"
   }
 }

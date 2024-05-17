@@ -111,6 +111,22 @@ class ProductController {
             });
     }
 
+    getInforProduct(req, res) {
+        const _id = req.query._id;
+
+        Product.findOne({ _id: _id })
+            .then(product => {
+                if (product) {
+                    res.json(product);
+                } else {
+                    res.status(404).json({ error: 'Not found' });
+                }
+            })
+            .catch(error => {
+                res.status(500).json({ error: 'Internal Server Error' });
+            });
+    }
+
     updateProductPopularStatus(req, res) {
         const title = req.query.title;
         const popular = req.query.popular;
@@ -156,6 +172,30 @@ class ProductController {
                 res.status(500).json({ error: 'Internal Server Error' });
             });
     }
+
+    updateInforProduct(req, res) {
+        const _id = req.query._id;
+        const { imageUrl, name, price, category } = req.body;
+
+        if (!imageUrl || !name || !price || !category) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
+
+        const update = { image: imageUrl, title: name, price, category };
+
+        Product.findOneAndUpdate({ _id: _id }, update, { new: true })
+            .then(updatedProduct => {
+                if (updatedProduct) {
+                    res.json({ message: 'Update successfully' });
+                } else {
+                    res.status(404).json({ error: 'Product not found' });
+                }
+            })
+            .catch(error => {
+                res.status(500).json({ error: 'Internal Server Error' });
+            });
+    }
+
 }
 
 module.exports = new ProductController();
