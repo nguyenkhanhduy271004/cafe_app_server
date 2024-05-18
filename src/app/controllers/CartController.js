@@ -26,7 +26,7 @@ class CartController {
     getProductsInCart(req, res) {
         const username = req.query.username;
         if (username) {
-            Cart.find({ user: username, isOrdered: false })
+            Cart.find({ user: username, isConfirmed: false, isOrdered: false })
                 .then(products => res.json(products))
                 .catch(err => {
                     console.error(err);
@@ -236,7 +236,7 @@ class CartController {
     getToalPrice(req, res) {
         const username = req.query.username;
         if (username) {
-            Cart.find({ user: username, isOrdered: false })
+            Cart.find({ user: username, isConfirmed: false })
                 .then(products => {
                     let totalPrice = 0;
                     products.forEach(cart => {

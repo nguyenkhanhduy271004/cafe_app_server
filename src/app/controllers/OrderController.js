@@ -28,6 +28,31 @@ class OrderController {
             });
     }
 
+    setValueDiscount(req, res) {
+        const username = req.query.username;
+        const valueDiscount = req.query.valueDiscount;
+
+        if (!username) {
+            return res.status(400).send({ error: 'Username not provided.' });
+        }
+
+        Order.findOne({ clientName: username }).sort({ createdAt: -1 }).exec()
+            .then(order => {
+                if (!order) {
+                    return res.status(200).send({ message: 'Save payment method failed' });
+                }
+                order.valueDiscount = valueDiscount;
+                return order.save();
+            })
+            .then(() => {
+                res.status(200).send({ message: 'Save payment method successfully' });
+            })
+            .catch(err => {
+                console.error(err);
+                res.status(500).send({ error: 'Internal server error.' });
+            });
+    }
+
     saveAddressForCart(req, res) {
         const username = req.query.username;
         const { name, phone, address } = req.body;
@@ -104,6 +129,61 @@ class OrderController {
                     totalPrice += parseFloat(cart.price) * parseFloat(cart.quantity);
                 });
                 res.json({ totalPrice });
+            })
+            .catch(err => {
+                console.error(err);
+                res.status(500).json({ error: 'Internal Server Error' });
+            });
+    }
+
+    getInforForBill(req, res) {
+        const username = req.query.username;
+
+        if (!username) {
+            return res.status(400).json({ error: 'Missing username!' });
+        }
+
+        Order.findOne({ clientName: username }).sort({ createdAt: -1 }).exec()
+            .then(order => {
+                if (!order) {
+                    return res.status(404).json({ message: 'Cannot find orderId' });
+                } else {
+                    res.json(order);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                res.status(500).json({ error: 'Internal Server Error' });
+            });
+    }
+
+    getInforForBill1(req, res) {
+        const _id = req.query._id;
+
+        if (!_id) {
+            return res.status(400).json({ error: 'Missing cartId!' });
+        }
+
+        Cart.findOne({ _id: _id })
+            .then(cart => {
+                if (!cart) {
+                    return res.status(404).json({ message: 'Cannot find cart with the given ID' });
+                }
+
+                const orderId = cart.orderId;
+
+                if (!orderId) {
+                    return res.status(404).json({ message: 'Cannot find orderId in the cart' });
+                }
+
+                return Order.findOne({ orderId: orderId });
+            })
+            .then(order => {
+                if (!order) {
+                    return res.status(404).json({ message: 'Cannot find order with the given orderId' });
+                }
+
+                res.json(order);
             })
             .catch(err => {
                 console.error(err);

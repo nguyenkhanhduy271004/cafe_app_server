@@ -9,6 +9,7 @@ const OrderSchema = new Schema(
         phone: { type: String },
         address: { type: String },
         total: { type: Number },
+        valueDiscount: { type: Number },
         paymentMethod: { type: String },
     },
     {

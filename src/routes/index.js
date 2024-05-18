@@ -1,5 +1,6 @@
 const addresssRouter = require('./addresss')
 const cartRouter = require('./cart')
+const discountsRouter = require('./discount')
 const emailsRouter = require('./emails')
 const loginRouter = require('./login')
 const ordersRouter = require('./orders')
@@ -13,6 +14,8 @@ function route(app) {
     app.use('/address', addresssRouter)
 
     app.use('/cart', cartRouter)
+
+    app.use('/discounts', discountsRouter)
 
     app.use('/emails', emailsRouter)
 
