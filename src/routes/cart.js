@@ -37,6 +37,8 @@ router.post('/add-to-cart', cartController.addToCart)
 
 router.post('/update-cart-item/:username/:cartId', cartController.updateCartItem)
 
+router.post('/evaluate-product', cartController.evaluateProduct)
+
 router.delete('/delete-product', cartController.deleteProduct)
 
 router.delete('/delete-all-products-in-cart', cartController.deleteAllProductInCart)

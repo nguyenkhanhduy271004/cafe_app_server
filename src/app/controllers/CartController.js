@@ -65,11 +65,11 @@ class CartController {
     }
 
     setOrdered(req, res) {
-        const username = req.query.username;
-        if (username) {
+        const _id = req.query._id;
+        if (_id) {
             const currentTime = new Date();
             const formattedTime = format(currentTime, "dd/MM/yyyy HH:mm");
-            Cart.updateMany({ user: username, isOrdered: false }, { $set: { isOrdered: true, orderedAt: formattedTime } })
+            Cart.updateMany({ _id: _id, isOrdered: false }, { $set: { isOrdered: true, orderedAt: formattedTime } })
                 .then(() => res.status(200).send({ message: 'isOrdered set to true for all products.', orderedAt: formattedTime }))
                 .catch(err => {
                     console.error(err);
@@ -328,6 +328,37 @@ class CartController {
                 res.status(500).json({ message: 'Internal Server Error' });
             });
     }
+
+    evaluateProduct(req, res) {
+        const { _id, starEvaluate, contentEvaluate } = req.query;
+        if (!_id || !starEvaluate || !contentEvaluate) {
+            return res.status(400).send({ error: 'Missing required fields.' });
+        }
+
+        Cart.findOne({ _id: _id })
+            .then(product => {
+                if (!product) {
+                    return res.status(404).json({ message: 'Product not found' });
+                }
+                const orderId = product.orderId;
+                return Cart.updateMany(
+                    { orderId: orderId },
+                    { $set: { starEvaluate: starEvaluate, contentEvaluate: contentEvaluate } }
+                );
+            })
+            .then(result => {
+                if (result.nModified > 0) {
+                    res.status(200).json({ message: 'Products evaluated successfully', modifiedCount: result.nModified });
+                } else {
+                    res.status(404).json({ message: 'No products found or updated' });
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                res.status(500).json({ error: 'Internal Server Error' });
+            });
+    }
+
 
     deleteProduct(req, res) {
         const user = req.query.user;

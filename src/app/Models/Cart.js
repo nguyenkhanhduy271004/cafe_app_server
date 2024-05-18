@@ -15,6 +15,8 @@ const CartSchema = new Schema(
         orderedAt: { Date },
         options: [{ type: String }],
         paymentMethod: { type: String },
+        starEvaluate: { type: Number },
+        contentEvaluate: { type: String },
         isConfirmed: { type: Boolean, default: false },
         isOrdered: { type: Boolean, default: false },
         isCompleted: { type: Boolean, default: false }
