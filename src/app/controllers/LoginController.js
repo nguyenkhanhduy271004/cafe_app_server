@@ -16,6 +16,7 @@ class LoginController {
     signup(req, res) {
         const user = new User({
             username: req.body.username,
+            fullname: req.body.username,
             email: req.body.email,
             phoneNumber: req.body.phoneNumber,
             password: req.body.password
@@ -34,6 +35,7 @@ class LoginController {
     addStaff(req, res) {
         const user = new User({
             username: req.body.username,
+            fullname: req.body.username,
             email: req.body.email,
             phoneNumber: req.body.phoneNumber,
             password: req.body.password,

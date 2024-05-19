@@ -41,7 +41,7 @@ class CartController {
         const username = req.query.username;
         if (username) {
             generateUniqueOrderId().then(orderId => {
-                Cart.updateMany({ user: username, isOrdered: false }, { $set: { orderId: orderId } })
+                Cart.updateMany({ user: username, isConfirmed: false }, { $set: { orderId: orderId } })
                     .then(() => {
                         const newOrder = new Order({
                             orderId: orderId,
@@ -85,7 +85,7 @@ class CartController {
         if (username) {
             const currentTime = new Date();
             const formattedTime = format(currentTime, "dd/MM/yyyy HH:mm");
-            Cart.updateMany({ user: username, isOrdered: false }, { $set: { isConfirmed: true, orderedAt: formattedTime } })
+            Cart.updateMany({ user: username, isConfirmed: false }, { $set: { isConfirmed: true, orderedAt: formattedTime } })
                 .then(() => res.status(200).send({ message: 'isOrdered set to true for all products.', orderedAt: formattedTime }))
                 .catch(err => {
                     console.error(err);
@@ -101,7 +101,7 @@ class CartController {
         Cart.findOne({ _id: _id })
             .then(product => {
                 const orderId = product.orderId;
-                return Cart.updateMany({ orderId: orderId }, { $set: { isCompleted: true } });
+                return Cart.updateMany({ orderId: orderId }, { $set: { isConfirmed: true, isOrdered: true, isCompleted: true } });
             })
             .then(() => res.status(200).send({ message: 'isCompleted set to true for all products.' }))
             .catch(err => {
@@ -235,23 +235,43 @@ class CartController {
 
     getToalPrice(req, res) {
         const username = req.query.username;
-        if (username) {
-            Cart.find({ user: username, isConfirmed: false })
-                .then(products => {
-                    let totalPrice = 0;
-                    products.forEach(cart => {
-                        totalPrice += parseFloat(cart.price) * parseFloat(cart.quantity);
-                    });
-                    res.json({ totalPrice });
-                })
-                .catch(error => {
-                    console.error(error);
-                    res.status(500).json({ error: 'Internal Server Error' });
-                });
-        } else {
-            res.status(400).send({ error: 'Username not provided.' });
+        if (!username) {
+            return res.status(400).send({ error: 'Username not provided.' });
         }
+
+        Cart.find({ user: username, isConfirmed: false })
+            .then(products => {
+                let totalPrice = 0;
+                products.forEach(cart => {
+                    totalPrice += parseFloat(cart.price) * parseFloat(cart.quantity);
+                });
+
+                if (products.length > 0) {
+                    const orderId = products[0].orderId;
+                    if (orderId) {
+                        return Order.findOne({ orderId: orderId })
+                            .then(order => {
+                                if (order) {
+                                    order.total = totalPrice;
+                                    return order.save().then(() => res.json({ totalPrice }));
+                                } else {
+                                    return res.json({ totalPrice });
+                                }
+                            });
+                    } else {
+                        return res.json({ totalPrice });
+                    }
+                } else {
+                    return res.json({ totalPrice });
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                res.status(500).json({ error: 'Internal Server Error' });
+            });
     }
+
+
 
     getProductsForBill(req, res) {
         const _id = req.query._id;

@@ -25,9 +25,8 @@ router.get('/get-password', userController.getPassword)
 
 router.post('/save-infor-user', userController.saveInforUser)
 
-router.post('/save-image-user', userController.saveImageUser)
-
 router.post('/change-password', userController.changePassword)
 
+router.post('/upload', userController.saveImageUser);
 
 module.exports = router;

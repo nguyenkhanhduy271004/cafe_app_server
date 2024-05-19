@@ -1,9 +1,27 @@
 const User = require('../Models/User');
+const fs = require('fs');
+const path = require('path');
+const multer = require('multer');
+
+const uploadDir = path.join(__dirname, '..', 'uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({ storage: storage });
 
 class UserController {
 
     getListUserOffline(req, res) {
-        User.find({ isOnline: false, role: "staff" }, { _id: 0, userId: 1, username: 1, fullname: 1, phoneNumber: 1, password: 1, role: 1 })
+        User.find({ isOnline: false, role: "staff" }, { _id: 0, userId: 1, username: 1, imageUrl: 1, fullname: 1, phoneNumber: 1, password: 1, role: 1 })
             .then(users => {
                 res.json(users);
             })
@@ -14,7 +32,7 @@ class UserController {
     }
 
     getListUserOnline(req, res) {
-        User.find({ isOnline: true, role: "staff" }, { _id: 0, userId: 1, username: 1, fullname: 1, phoneNumber: 1, password: 1, role: 1 })
+        User.find({ isOnline: true, role: "staff" }, { _id: 0, userId: 1, username: 1, imageUrl: 1, fullname: 1, phoneNumber: 1, password: 1, role: 1 })
             .then(users => {
                 res.json(users);
             })
@@ -27,7 +45,7 @@ class UserController {
     getInforUserForAdmin(req, res) {
         const userId = req.query.userId;
 
-        User.findOne({ userId: userId }, { _id: 0, userId: 1, username: 1, password: 1, role: 1 }).exec()
+        User.findOne({ userId: userId }, { _id: 0, userId: 1, username: 1, imageUrl: 1, password: 1, role: 1 }).exec()
             .then(user => {
                 if (!user) {
                     return res.status(404).json({ error: 'User not found' });
@@ -120,7 +138,6 @@ class UserController {
             });
     }
 
-
     updateRoleForUserForAdmid(req, res) {
         const userId = req.query.userId;
         const role = req.query.role;
@@ -171,20 +188,6 @@ class UserController {
             });
     }
 
-    saveImageUser(req, res) {
-        const username = req.query.username;
-        const imageUrl = req.query.imageUrl;
-
-        User.findOneAndUpdate({ username: username }, { imageUrl: imageUrl }).exec()
-            .then(() => {
-                res.status(201).json({ message: 'Lưu thông tin người dùng thành công' });
-            })
-            .catch(err => {
-                console.error(err);
-                res.status(500).json({ message: 'Đã xảy ra lỗi nội bộ' });
-            });
-    }
-
     changePassword(req, res) {
         const username = req.query.username;
         const newPassword = req.query.password;
@@ -207,6 +210,37 @@ class UserController {
                 res.status(500).json({ message: 'Internal server error' });
             });
     }
+
+    saveImageUser(req, res) {
+        upload.single('image')(req, res, (err) => {
+            const username = req.body.username;
+            if (err) {
+                console.error('Error uploading file:', err);
+                return res.status(500).json({ message: 'Error uploading file' });
+            }
+
+            const imageUrl = req.file ? req.file.filename : null;
+
+            if (!imageUrl) {
+                console.error('No file uploaded');
+                return res.status(400).json({ message: 'No file uploaded' });
+            }
+
+            const serverUrl = 'http://192.168.56.1:3001';
+            const fullImageUrl = `${serverUrl}/uploads/${imageUrl}`;
+
+            User.findOneAndUpdate({ username: username }, { imageUrl: fullImageUrl }).exec()
+                .then(() => {
+                    res.status(201).json({ message: 'Image uploaded successfully', imageUrl: fullImageUrl });
+                })
+                .catch(err => {
+                    console.error('Internal server error:', err);
+                    res.status(500).json({ message: 'Internal server error' });
+                });
+        });
+    }
+
+
 }
 
 module.exports = new UserController();
