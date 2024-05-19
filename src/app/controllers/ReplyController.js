@@ -19,6 +19,18 @@ class ReplyController {
                 res.status(500).json({ message: 'Đã xảy ra lỗi nội bộ' });
             });
     }
+
+    getContentReply(req, res) {
+        Reply.find({}).sort({ createdAt: -1 }).exec()
+            .then(replies => {
+                res.json(replies);
+            })
+            .catch(err => {
+                console.error(err);
+                res.status(400).send({ error: 'ERROR!' });
+            });
+    }
+
 }
 
 module.exports = new ReplyController();

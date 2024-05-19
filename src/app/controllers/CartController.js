@@ -309,23 +309,40 @@ class CartController {
 
     addToCart(req, res) {
         const { user, image, title, price, quantity, total } = req.body;
-        const options = req.query.selectedOptions;
-        const cart = new Cart({
-            user: user,
-            image: image,
-            title: title,
-            price: price,
-            quantity: quantity,
-            total: total,
-            options: options
-        });
-        cart.save()
-            .then(newCart => res.status(201).json(newCart))
+        let options = req.query.selectedOptions;
+
+        if (!options) {
+            options = "default";
+        }
+
+        Cart.findOne({ user: user, title: title, options: options, isConfirmed: false })
+            .then(existingCartItem => {
+                if (existingCartItem) {
+                    existingCartItem.quantity += quantity;
+                    existingCartItem.total += total;
+                    return existingCartItem.save();
+                } else {
+                    const cart = new Cart({
+                        user: user,
+                        image: image,
+                        title: title,
+                        price: price,
+                        quantity: quantity,
+                        total: total,
+                        options: options
+                    });
+                    return cart.save();
+                }
+            })
+            .then(updatedCart => res.status(201).json(updatedCart))
             .catch(err => {
                 console.error(err);
                 res.status(500).json({ message: 'Đã xảy ra lỗi nội bộ' });
             });
     }
+
+
+
 
     updateCartItem(req, res) {
         const username = req.params.username;
