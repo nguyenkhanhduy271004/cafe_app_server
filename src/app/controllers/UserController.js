@@ -191,6 +191,25 @@ class UserController {
             });
     };
 
+    getEmailUser(req, res) {
+        const username = req.query.username;
+
+        if (!username) {
+            return res.status(400).json({ error: 'Username is required' });
+        }
+
+        User.findOne({ username: username })
+            .then(user => {
+                if (!user) {
+                    return res.status(404).json({ error: 'User not found' });
+                }
+                res.json(user.email);
+            })
+            .catch(err => {
+                console.error(err);
+                res.status(500).json({ error: 'Internal Server Error' });
+            });
+    };
 
     saveInforUser(req, res) {
         const username = req.query.username;

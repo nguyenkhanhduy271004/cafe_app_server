@@ -17,6 +17,8 @@ router.get('/get-password', userController.getPassword)
 
 router.get('/get-image-user', userController.getImageUser)
 
+router.get('/get-email-user', userController.getEmailUser)
+
 router.patch('/set-online-for-user-for-admin', userController.setOnlineForUserForAdmin)
 
 router.patch('/set-online-for-user', userController.setOnlineForUser)
