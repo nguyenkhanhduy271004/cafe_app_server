@@ -19,6 +19,7 @@ const CartSchema = new Schema(
         contentEvaluate: { type: String },
         isConfirmed: { type: Boolean, default: false },
         isOrdered: { type: Boolean, default: false },
+        isDelivered: { type: Boolean, default: false },
         isCompleted: { type: Boolean, default: false }
     },
     {

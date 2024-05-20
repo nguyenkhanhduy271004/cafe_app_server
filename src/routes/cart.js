@@ -11,6 +11,8 @@ router.put('/set-confirmed', cartController.setConfirmed)
 
 router.put('/set-ordered', cartController.setOrdered)
 
+router.put('/set-delivered', cartController.setDelivered)
+
 router.get('/receive-order', cartController.receiveOrder)
 
 router.get('/get-product-in-processing', cartController.getProductsInProcessing)

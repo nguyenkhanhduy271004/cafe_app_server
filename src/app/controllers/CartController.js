@@ -26,7 +26,7 @@ class CartController {
     getProductsInCart(req, res) {
         const username = req.query.username;
         if (username) {
-            Cart.find({ user: username, isConfirmed: false, isOrdered: false })
+            Cart.find({ user: username, isConfirmed: false, isOrdered: false, isDelivered: false, isCompleted: false })
                 .then(products => res.json(products))
                 .catch(err => {
                     console.error(err);
@@ -64,36 +64,49 @@ class CartController {
         }
     }
 
-    setOrdered(req, res) {
-        const _id = req.query._id;
-        if (_id) {
-            const currentTime = new Date();
-            const formattedTime = format(currentTime, "dd/MM/yyyy HH:mm");
-            Cart.updateMany({ _id: _id, isOrdered: false }, { $set: { isOrdered: true, orderedAt: formattedTime } })
-                .then(() => res.status(200).send({ message: 'isOrdered set to true for all products.', orderedAt: formattedTime }))
-                .catch(err => {
-                    console.error(err);
-                    res.status(500).send({ error: 'Internal server error.' });
-                });
-        } else {
-            res.status(400).send({ error: 'Username not provided.' });
-        }
-    }
 
     setConfirmed(req, res) {
-        const username = req.query.username;
-        if (username) {
-            const currentTime = new Date();
-            const formattedTime = format(currentTime, "dd/MM/yyyy HH:mm");
-            Cart.updateMany({ user: username, isConfirmed: false }, { $set: { isConfirmed: true, orderedAt: formattedTime } })
-                .then(() => res.status(200).send({ message: 'isOrdered set to true for all products.', orderedAt: formattedTime }))
-                .catch(err => {
-                    console.error(err);
-                    res.status(500).send({ error: 'Internal server error.' });
-                });
-        } else {
-            res.status(400).send({ error: 'Username not provided.' });
-        }
+        const _id = req.query._id;
+        Cart.findOne({ _id: _id })
+            .then(product => {
+                const orderId = product.orderId;
+                return Cart.updateMany({ orderId: orderId }, { $set: { isConfirmed: true } });
+            })
+            .then(() => res.status(200).send({ message: 'isCompleted set to true for all products.' }))
+            .catch(err => {
+                console.error(err);
+                res.status(500).send({ error: 'Internal server error.' });
+            });
+    }
+
+    setOrdered(req, res) {
+        const _id = req.query._id;
+        Cart.findOne({ _id: _id })
+            .then(product => {
+                const currentTime = new Date();
+                const formattedTime = format(currentTime, "dd/MM/yyyy HH:mm");
+                const orderId = product.orderId;
+                return Cart.updateMany({ orderId: orderId }, { $set: { isConfirmed: true, isOrdered: true, orderedAt: formattedTime } });
+            })
+            .then(() => res.status(200).send({ message: 'isCompleted set to true for all products.' }))
+            .catch(err => {
+                console.error(err);
+                res.status(500).send({ error: 'Internal server error.' });
+            });
+    }
+
+    setDelivered(req, res) {
+        const _id = req.query._id;
+        Cart.findOne({ _id: _id })
+            .then(product => {
+                const orderId = product.orderId;
+                return Cart.updateMany({ orderId: orderId }, { $set: { isConfirmed: true, isOrdered: true, isDelivered: true } });
+            })
+            .then(() => res.status(200).send({ message: 'isCompleted set to true for all products.' }))
+            .catch(err => {
+                console.error(err);
+                res.status(500).send({ error: 'Internal server error.' });
+            });
     }
 
     receiveOrder(req, res) {
@@ -127,7 +140,7 @@ class CartController {
     }
 
     getProductsInProcessingForStaff(req, res) {
-        Cart.find({ isConfirmed: true, isCompleted: false })
+        Cart.find({ isCompleted: false })
             .then(products => res.json(products))
             .catch(err => {
                 console.error(err);
@@ -312,7 +325,7 @@ class CartController {
         let options = req.query.selectedOptions;
 
         if (!options) {
-            options = "default";
+            options = "Không có";
         }
 
         Cart.findOne({ user: user, title: title, options: options, isConfirmed: false })
