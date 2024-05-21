@@ -126,7 +126,7 @@ class CartController {
     getProductsInProcessing(req, res) {
         const username = req.query.username;
         if (username) {
-            Cart.find({ user: username, isCompleted: false }).sort({ createdAt: -1 })
+            Cart.find({ user: username, isCompleted: false, orderId: { $exists: true, $ne: null } }).sort({ createdAt: -1 })
                 .then(products => res.json(products))
                 .catch(err => {
                     console.error(err);
