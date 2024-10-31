@@ -4,8 +4,8 @@ class ProductController {
 
     getProducts(req, res) {
         Product.find({})
-            .then(users => {
-                res.json(users);
+            .then(product => {
+                res.json(product);
             })
             .catch(err => {
                 console.error(err);

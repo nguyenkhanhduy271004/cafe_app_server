@@ -1,12 +1,14 @@
 const express = require('express');
 const app = express();
 const morgan = require('morgan');
+const cors = require('cors');
 const path = require('path');
 const port = 3001;
 
 const db = require('../config/db');
 db.connect();
 
+app.use(cors());
 app.use(morgan('combined'));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'app/uploads')));
